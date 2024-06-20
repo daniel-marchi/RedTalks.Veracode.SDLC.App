@@ -1,2 +1,2 @@
 # RedTalks.Veracode.SDLC.App
-RedTalks.Veracode.SDLC.App -> Owasp PyGoat
+RedTalks.Veracode.SDLC.App -> verademo-python
