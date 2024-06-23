@@ -1,0 +1,76 @@
+#
+# This is an example of using VeraDemo Java test application with the Veracode Static scanner.  
+#
+
+# A Veracode subscription is required.
+trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Build
+    jobs:
+    - job: doBuild
+      steps:
+      - task: Maven@3
+        displayName: Build with Maven
+        inputs:
+          mavenPomFile: 'app/pom.xml'
+          mavenOptions: '-Xmx3072m'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.8'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
+          goals: 'package'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: 'app/target/verademo.war'
+          ArtifactName: 'upload'
+
+  - stage: PolicyScan
+    jobs:
+    - job: doStaticScan
+      steps:
+      #debugging step
+      # - script: |
+      #     echo buildNumber: $(build.buildNumber)
+      #     echo binDir: $(build.binariesDirectory)
+      #     echo artDir: $(build.artifactstagingdirectory)
+      #     echo srcDir: $(build.sourcesDirectory)
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          artifactName: upload
+      - task: Veracode@3
+        inputs:
+          ConnectionDetailsSelection: 'Credentials'
+          apiId: $(VERACODE_API_ID)
+          apiKey: $(VERACODE_API_KEY)
+          veracodeAppProfile: 'Verademo'
+          version: 'Azure-$(build.buildNumber)'
+          filepath: '$(build.artifactstagingdirectory)/upload/verademo.war'
+
+# the above steps are the bare minimum.
+# below are some additional steps that are commonplace
+  - stage: SCAScan
+    jobs:
+    - job: doSCAScan
+      steps:
+      - script: |
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan app
+        env: 
+          SRCCLR_API_TOKEN: $(SRCCLR_TOKEN)
+
+  - stage: ContainerScan
+    jobs:
+    - job: doContainerScan
+      steps:
+      - script: |
+          curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+          ./veracode scan --type directory --source . --format table
+        env:
+          VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+          VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+
+

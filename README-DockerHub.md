@@ -23,19 +23,23 @@ Blab-a-Gag is a fairly simple forum type application which allows:
 
 ## Run
 
-If you don't already have Docker this is a prerequisite.
+Download and run the image with:
 
     docker run -p 8080:8080 veracode/vulnerable-verademo-java
 
-Navigate to: `http://127.0.0.1:8080`.
+Navigate to: `http://127.0.0.1:8080`, register as a new user, login, add some feeds and blabs.
 
-## Exploitation Demos
+## Other Notes
 
-See the [DEMO_NOTES](DEMO_NOTES.md) file for information on using this application with the various Veracode scan types.
+The source for this image is hosted [here](https://github.com/veracode-demo-labs/verademo-java), and within that repo are additional files that will cover both how to exploit this application and how to build this application for various CI systems.
+
+### Exploitation Demos
+
+See the [DEMO_NOTES](https://github.com/veracode-demo-labs/verademo-java/blob/main/DEMO_NOTES.md) file for information on using this application with the various Veracode scan types.
 
 Also see the `docs` folder for in-depth explanations of the various exploits exposed in this application.
 
-## CI System Demos
+### CI System Demos
 
 There are build files for various CI systems included as part of this application. Often there are several sample build files for each CI system, but there will always be at least an 'essentials' file that shows the basic steps to get the application packaged and scanned with Veracode's technology.
 
@@ -52,12 +56,12 @@ Note that there are some secrets that need to get set in the build files. These 
 | GitLab        | `.gitlab-ci.yml`                                                   |
 | AWS           | `AWS-CodeStar.md` (directions for configuring AWS CodeStar builds) |
 
-## Technologies Used
+### Technologies Used
 
 - Spring boot
 - MariaDB
 
-## Development
+### Development
 
 To build the container run this:
 
